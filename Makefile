@@ -37,3 +37,5 @@ build: hooks
 
 clean:
 	cd ${DESTDIR} && lb clean
+
+.PHONY: all build_environment prepare_configure make_config add_repos add_packages hooks build_environment clean
