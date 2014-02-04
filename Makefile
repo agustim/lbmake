@@ -35,6 +35,7 @@ add_packages: add_repos
 	@echo "locales" > ${DESTDIR}/config/package-lists/locale.list.chroot
 
 hooks: add_packages
+	mkdir -p ${DESTDIR}/config/hooks
 	cp hooks/* ${DESTDIR}/config/hooks/
 
 build: hooks
