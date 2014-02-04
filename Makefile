@@ -27,7 +27,7 @@ add_packages: add_repos
 	@echo "getinconf-client" > ${DESTDIR}/config/package-lists/tinc.list.chroot
 	@echo "curl unzip make avahi-utils" > ${DESTDIR}/config/package-lists/avahi.list.chroot
 	@echo "mysql-server" > ${DESTDIR}/config/package-lists/mysql.list.chroot
-	@echo "python g++ make checkinstall" > ${DESTDIR}/config/package-lists/node.list.chroot
+	@echo "python2.7 g++ make checkinstall" > ${DESTDIR}/config/package-lists/node.list.chroot
 
 hooks: add_packages
 	cp hooks/* ${DESTDIR}/config/hooks/
