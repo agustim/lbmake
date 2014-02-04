@@ -28,6 +28,7 @@ add_packages: add_repos
 	@echo "openssh-server openssh-client" > ${DESTDIR}/config/package-lists/ssh.list.chroot
 	@echo "getinconf-client" > ${DESTDIR}/config/package-lists/tinc.list.chroot
 	@echo "curl unzip make avahi-utils" > ${DESTDIR}/config/package-lists/avahi.list.chroot
+	@echo "tahoe-lafs" > ${DESTDIR}/config/package-lists/tahoe.list.chroot
 	@echo "mysql-server" > ${DESTDIR}/config/package-lists/mysql.list.chroot
 	@echo "python2.7 g++ make checkinstall" > ${DESTDIR}/config/package-lists/nodejs.list.chroot
 	@echo "openjdk-6-jre" > ${DESTDIR}/config/package-lists/java.list.chroot
