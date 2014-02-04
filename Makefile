@@ -32,6 +32,7 @@ add_packages: add_repos
 	@echo "mysql-server" > ${DESTDIR}/config/package-lists/mysql.list.chroot
 	@echo "python2.7 g++ make checkinstall" > ${DESTDIR}/config/package-lists/nodejs.list.chroot
 	@echo "openjdk-6-jre" > ${DESTDIR}/config/package-lists/java.list.chroot
+	@echo "locales" > ${DESTDIR}/config/package-lists/locale.list.chroot
 
 hooks: add_packages
 	cp hooks/* ${DESTDIR}/config/hooks/
