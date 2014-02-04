@@ -1,8 +1,8 @@
-#lbmake : Live-Build Make
+# lbmake - Live-Build Make
 
-This software is Clommunity distro builder.
+Build and package the Clommunity distro
 
-##Use:
+## Usage
 
-	make
+	sudo make
 
