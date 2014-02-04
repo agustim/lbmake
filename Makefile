@@ -1,5 +1,8 @@
 # Makefile
 DESTDIR ?= devel
+ARCH ?= i386
+FLAVOUR ?= 686-pae
+BINARYIMAGE ?= iso-hybrid
 
 all: build
 
@@ -8,7 +11,7 @@ build_environment:
 	cp /usr/share/doc/live-build/examples/auto/* ${DESTDIR}/auto/
 
 prepare_configure: build_environment
-	echo -e '#!/bin/sh\nlb config noauto --architectures i386 linux-flavours 686-pae --bootappend-live "boot=live config keyboard-layouts=es,es" "${@}"' > ${DESTDIR}/auto/config
+	echo -e '#!/bin/sh\nlb config noauto -b ${BINARYIMAGE} --architectures ${ARCH} linux-flavours ${FLAVOUR} --bootappend-live "boot=live config keyboard-layouts=es,es" "${@}"' > ${DESTDIR}/auto/config
 
 make_config: prepare_configure
 	cd ${DESTDIR} && lb config
