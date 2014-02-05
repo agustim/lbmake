@@ -2,7 +2,7 @@
 DESTDIR ?= devel
 ARCH ?= i386
 FLAVOUR ?= 686-pae
-BINARYIMAGE ?= iso-hybrid
+IMAGE ?= iso-hybrid
 
 all: build
 
@@ -12,7 +12,7 @@ build_environment:
 
 prepare_configure: build_environment
 	@echo 'lb config noauto \
-		--binary-images ${BINARYIMAGE} \
+		--binary-images ${IMAGE} \
 		--architectures ${ARCH} \
 		--linux-flavours ${FLAVOUR} \
 		--bootappend-live "boot=live config keyboard-layouts=es,es" \
