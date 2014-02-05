@@ -18,7 +18,7 @@ prepare_configure: build_environment
 		--bootappend-live "boot=live config keyboard-layouts=es,es" \
 		--debian-installer live \
 		--apt-indices false \
-		"${@}"' > ${DESTDIR}/auto/config
+		"$${@}"' > ${DESTDIR}/auto/config
 
 make_config: prepare_configure
 	cd ${DESTDIR} && lb config
