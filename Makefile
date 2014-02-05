@@ -16,6 +16,7 @@ prepare_configure: build_environment
 		--architectures ${ARCH} \
 		--linux-flavours ${FLAVOUR} \
 		--bootappend-live "boot=live config keyboard-layouts=es,es" \
+		--debian-installer live \
 		--apt-indices false \
 		"${@}"' > ${DESTDIR}/auto/config
 
