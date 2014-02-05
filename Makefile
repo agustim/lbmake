@@ -16,6 +16,7 @@ prepare_configure: build_environment
 		--architectures ${ARCH} \
 		--linux-flavours ${FLAVOUR} \
 		--bootappend-live "boot=live config keyboard-layouts=es,es" \
+		--apt-indices false \
 		"${@}"' > ${DESTDIR}/auto/config
 
 make_config: prepare_configure
