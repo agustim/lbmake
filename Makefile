@@ -8,7 +8,7 @@ all: build
 
 build_environment:
 	mkdir -p ${DESTDIR}/auto
-	cp /usr/share/doc/live-build/examples/auto/* ${DESTDIR}/auto/
+	cp /usr/share/doc/live-build/examples/auto/* ${DESTDIR}/auto/ 
 
 prepare_configure: build_environment
 	@echo 'lb config noauto \
@@ -45,7 +45,11 @@ hooks: add_packages
 	mkdir -p ${DESTDIR}/config/hooks
 	cp hooks/* ${DESTDIR}/config/hooks/
 
-build: hooks
+custom: hooks
+	mkdir -p ${DESTDIR}/config/custom
+	cp custom/* ${DESTDIR}/config/custom/
+
+build: custom
 	cd ${DESTDIR} && lb build
 
 clean:
