@@ -1,6 +1,6 @@
 #!/bin/bash
 
 #Copies the custom splash.png image
-cp -fr config/hooks/splash.png binary/isolinux/
+cp -fr config/custom/splash.png binary/isolinux/
 
 
