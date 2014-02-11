@@ -10,6 +10,11 @@ PKGDIR := ${DESTDIR}/config/package-lists
 HOOKDIR := ${DESTDIR}/config/hooks
 CUSTDIR := ${DESTDIR}/config/custom
 
+SPLASH_TITLE := Clommunity distro
+TIMESTAMP := $(shell date -u '+%d %b %Y %R %Z')
+GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
+GIT_HASH := $(shell git rev-parse --short=9 HEAD)
+
 all: build
 
 build_environment:
@@ -44,16 +49,20 @@ add_packages: add_repos
 	echo "tahoe-lafs" > ${PKGDIR}/tahoe.list.chroot
 	echo "mysql-server" > ${PKGDIR}/mysql.list.chroot
 	echo "python2.7 g++ make checkinstall" > ${PKGDIR}/nodejs.list.chroot
-	echo "openjdk-6-jre" > ${destdir}/CONFig/package-lists/java.list.chroot
+	echo "openjdk-6-jre" > ${destdir}/java.list.chroot
 	echo "locales" > ${PKGDIR}/locale.list.chroot
 
 hooks: add_packages
 	mkdir -p ${HOOKDIR}
 	cp hooks/* ${HOOKDIR}/
 
-custom: hooks
+custom: hooks res/clommunity.png
 	mkdir -p ${CUSTDIR}
-	cp custom/* ${CUSTDIR}/
+	convert res/clommunity.png -gravity NorthWest -background black \
+		-bordercolor black -border 30x30 -extent 640x480 \
+		-fill white -pointsize 28 -gravity NorthWest -annotate +265+55 \
+		"${SPLASH_TITLE}\n${TIMESTAMP}\n${GIT_BRANCH}@${GIT_HASH}" \
+		${CUSTDIR}/splash.png
 
 build: custom
 	cd ${DESTDIR} && lb build
@@ -61,4 +70,4 @@ build: custom
 clean:
 	cd ${DESTDIR} && lb clean
 
-.PHONY: all build_environment prepare_configure make_config add_repos add_packages hooks clean
+.PHONY: all build_environment prepare_configure make_config add_repos add_packages hooks custom build clean
