@@ -10,8 +10,9 @@ PKGDIR := ${DESTDIR}/config/package-lists
 HOOKDIR := ${DESTDIR}/config/hooks
 CUSTDIR := ${DESTDIR}/config/custom
 
-NAME := Clommunity distro 
-SPLASH_TITLE := ${NAME}${ARCH}
+NAME := Clommunity distro
+SPLASH_TITLE := ${NAME}
+SPLASH_SUBTITLE := ${ARCH} ${FLAVOUR}
 TIMESTAMP := $(shell date -u '+%d %b %Y %R %Z')
 GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 GIT_HASH := $(shell git rev-parse --short=12 HEAD)
@@ -59,9 +60,11 @@ hooks: add_packages
 custom: hooks res/clommunity.png
 	mkdir -p ${CUSTDIR}
 	convert res/clommunity.png -gravity NorthWest -background black \
-		-bordercolor black -border 30x30 -extent 640x480 \
-		-fill white -pointsize 28 -gravity NorthWest -annotate +265+55 \
-		"${SPLASH_TITLE}\n${TIMESTAMP}\n${GIT_BRANCH}@${GIT_HASH}" \
+		-bordercolor black -border 80x50 -extent 640x480 \
+		-fill white -pointsize 28 -gravity NorthWest -annotate +330+55 \
+		"${SPLASH_TITLE}\n${SPLASH_SUBTITLE}" \
+		-fill white -pointsize 20 -gravity NorthWest -annotate +330+120 \
+		"${TIMESTAMP}\n${GIT_BRANCH}@${GIT_HASH}" \
 		${CUSTDIR}/splash.png
 
 build: custom
