@@ -45,14 +45,9 @@ add_repos: make_config
 
 add_packages: add_repos
 	mkdir -p ${PKGDIR}
-	echo "openssh-server openssh-client" > ${PKGDIR}/ssh.list.chroot
-	echo "getinconf-client" > ${PKGDIR}/tinc.list.chroot
-	echo "curl unzip make avahi-utils" > ${PKGDIR}/avahi.list.chroot
-	echo "tahoe-lafs" > ${PKGDIR}/tahoe.list.chroot
-	echo "mysql-server" > ${PKGDIR}/mysql.list.chroot
-	echo "python2.7 g++ make checkinstall" > ${PKGDIR}/nodejs.list.chroot
-	echo "openjdk-6-jre" > ${destdir}/java.list.chroot
-	echo "locales" > ${PKGDIR}/locale.list.chroot
+	while IFS=':	' read name pkgs; do \
+		echo $$pkgs > ${PKGDIR}/$$name.list.chroot; \
+	done < packages
 
 hooks: add_packages
 	mkdir -p ${HOOKDIR}
