@@ -4,6 +4,8 @@ ARCH ?= i386
 FLAVOUR ?= 686-pae
 IMAGE ?= iso-hybrid
 
+GET_KEY := curl -s 'http://pgp.mit.edu/pks/lookup?op=get&search=0xKEY_ID' | sed -n '/^-----BEGIN/,/^-----END/p'
+
 all: build
 
 build_environment:
@@ -22,8 +24,6 @@ prepare_configure: build_environment
 
 make_config: prepare_configure
 	cd ${DESTDIR} && lb config
-
-GET_KEY = curl -s 'http://pgp.mit.edu/pks/lookup?op=get&search=0xKEY_ID' | sed -n '/^-----BEGIN/,/^-----END/p'
 
 add_repos: make_config
 	@echo "deb http://repo.clommunity-project.eu/debian unstable/" > ${DESTDIR}/config/archives/gcodis.list.chroot
