@@ -2,7 +2,5 @@
 
 curl "https://codeload.github.com/agustim/avahi-ps/zip/master" > avahi-ps.zip
 unzip avahi-ps.zip
-cd avahi-ps-master 
+cd avahi-ps-master
 make install
-
-
