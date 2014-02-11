@@ -10,10 +10,11 @@ PKGDIR := ${DESTDIR}/config/package-lists
 HOOKDIR := ${DESTDIR}/config/hooks
 CUSTDIR := ${DESTDIR}/config/custom
 
-SPLASH_TITLE := Clommunity distro
+NAME := Clommunity distro 
+SPLASH_TITLE := ${NAME}${ARCH}
 TIMESTAMP := $(shell date -u '+%d %b %Y %R %Z')
 GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
-GIT_HASH := $(shell git rev-parse --short=9 HEAD)
+GIT_HASH := $(shell git rev-parse --short=12 HEAD)
 
 all: build
 
