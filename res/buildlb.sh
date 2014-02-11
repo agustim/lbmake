@@ -71,7 +71,7 @@ make_dirs
 gitpull
 make_workspace
 
-if [ -f $OLDIMG ]
+if [ -f ${ACTIMG} ]
 then
 	md5_compare ${ACTIMG} ${BUILDIMG}
 	if [ $? -eq 1 ]
