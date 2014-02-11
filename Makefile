@@ -18,6 +18,9 @@ GIT_HASH := $(shell git rev-parse --short=12 HEAD)
 
 all: build
 
+describe: packages
+	@cat packages
+
 build_environment:
 	mkdir -p ${DESTDIR}/auto
 	cp /usr/share/doc/live-build/examples/auto/* ${DESTDIR}/auto/ 
@@ -67,4 +70,4 @@ build: custom
 clean:
 	cd ${DESTDIR} && lb clean
 
-.PHONY: all build_environment prepare_configure make_config add_repos add_packages hooks custom build clean
+.PHONY: all describe build_environment prepare_configure make_config add_repos add_packages hooks custom build clean
