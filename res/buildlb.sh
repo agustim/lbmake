@@ -60,20 +60,26 @@ md5_compare(){
 }
 
 # Make image
+ACTIMG=${GP}${IMAGE_PATH}/unstable/${IMAGE_NAME}.${IMAGE_EXT}
+ACTREADME=${GP}${IMAGE_PATH}/unstable/${IMAGE_NAME}.README
+BUILDIMG=${GP}${WORKSPACE}/${LBWORKSPACE}/${LBIMAGE_NAME}
+OLDIMG=${GP}${IMAGE_PATH}/unstable/old/${IMAGE_NAME}.${TIMEFILE}.${IMAGE_EXT}
+OLDREADME=${GP}${IMAGE_PATH}/unstable/old/${IMAGE_NAME}.${TIMEFILE}.README
 
 make_dirs
 [ -d "${GP}${WORKSPACE}" ] && clean_workspace
 gitpull
 make_workspace
-if [ -f ${GP}${IMAGE_PATH}/unstable/${IMAGE_NAME}.${IMAGE_EXT} ]
+
+if [ -f $OLDIMG ]
 then
-	md5_compare ${GP}${IMAGE_PATH}/unstable/${IMAGE_NAME}.${IMAGE_EXT} ${GP}${WORKSPACE}/${LBWORKSPACE}/${LBIMAGE_NAME}
+	md5_compare ${ACTIMG} ${BUILDIMG}
 	if [ $? -eq 1 ]
 	then
-		TIMEFILE=$(stat -c %z ${GP}${IMAGE_PATH}/unstable/${IMAGE_NAME}.${IMAGE_EXT}|sed 's|[- :]||g'|cut -d "." -f 1)
-		mv ${GP}${IMAGE_PATH}/unstable/${IMAGE_NAME}.${IMAGE_EXT} ${GP}${IMAGE_PATH}/unstable/old/${IMAGE_NAME}.${TIMEFILE}.${IMAGE_EXT}
-		mv ${GP}${IMAGE_PATH}/unstable/${IMAGE_NAME}.README ${GP}${IMAGE_PATH}/unstable/old/${IMAGE_NAME}.${TIMEFILE}.README
+		TIMEFILE=$(stat -c %z ${ACTIMG}|sed 's|[- :]||g'|cut -d "." -f 1)
+		mv ${ACTIMG} ${OLDIMG}
+		mv ${ACTREADME} ${OLDREADME}
 	fi
 fi
-cp ${GP}${WORKSPACE}/${LBWORKSPACE}/${LBIMAGE_NAME} ${GP}${IMAGE_PATH}/unstable/${IMAGE_NAME}.${IMAGE_EXT}	
-make_readme ${GP}${IMAGE_PATH}/unstable/${IMAGE_NAME}.${IMAGE_EXT} > ${GP}${IMAGE_PATH}/unstable/${IMAGE_NAME}.README
+cp ${BUILDIMG} ${ACTIMG}	
+make_readme ${ACTIMG} > ${ACTREADME}
