@@ -5,6 +5,10 @@ FLAVOUR ?= 686-pae
 IMAGE ?= iso-hybrid
 
 GET_KEY := curl -s 'http://pgp.mit.edu/pks/lookup?op=get&search=0xKEY_ID' | sed -n '/^-----BEGIN/,/^-----END/p'
+ARCHDIR := ${DESTDIR}/config/archives
+PKGDIR := ${DESTDIR}/config/package-lists
+HOOKDIR := ${DESTDIR}/config/hooks
+CUSTDIR := ${DESTDIR}/config/custom
 
 all: build
 
@@ -26,28 +30,30 @@ make_config: prepare_configure
 	cd ${DESTDIR} && lb config
 
 add_repos: make_config
-	echo "deb http://repo.clommunity-project.eu/debian unstable/" > ${DESTDIR}/config/archives/gcodis.list.chroot
-	$(subst KEY_ID,8AE35B96C3FD5CD9, ${GET_KEY}) > ${DESTDIR}/config/archives/gcodis.key.chroot
-	echo "deb http://serveis.guifi.net/debian guifi/" > ${DESTDIR}/config/archives/serveis.list.chroot
-	$(subst KEY_ID,2E484DAB, ${GET_KEY}) > ${DESTDIR}/config/archives/serveis.key.chroot
+	mkdir -p ${ARCHDIR}
+	echo "deb http://repo.clommunity-project.eu/debian unstable/" > ${ARCHDIR}/gcodis.list.chroot
+	$(subst KEY_ID,8AE35B96C3FD5CD9, ${GET_KEY}) > ${ARCHDIR}/gcodis.key.chroot
+	echo "deb http://serveis.guifi.net/debian guifi/" > ${ARCHDIR}/serveis.list.chroot
+	$(subst KEY_ID,2E484DAB, ${GET_KEY}) > ${ARCHDIR}/serveis.key.chroot
 
 add_packages: add_repos
-	echo "openssh-server openssh-client" > ${DESTDIR}/config/package-lists/ssh.list.chroot
-	echo "getinconf-client" > ${DESTDIR}/config/package-lists/tinc.list.chroot
-	echo "curl unzip make avahi-utils" > ${DESTDIR}/config/package-lists/avahi.list.chroot
-	echo "tahoe-lafs" > ${DESTDIR}/config/package-lists/tahoe.list.chroot
-	echo "mysql-server" > ${DESTDIR}/config/package-lists/mysql.list.chroot
-	echo "python2.7 g++ make checkinstall" > ${DESTDIR}/config/package-lists/nodejs.list.chroot
-	echo "openjdk-6-jre" > ${DESTDIR}/config/package-lists/java.list.chroot
-	echo "locales" > ${DESTDIR}/config/package-lists/locale.list.chroot
+	mkdir -p ${PKGDIR}
+	echo "openssh-server openssh-client" > ${PKGDIR}/ssh.list.chroot
+	echo "getinconf-client" > ${PKGDIR}/tinc.list.chroot
+	echo "curl unzip make avahi-utils" > ${PKGDIR}/avahi.list.chroot
+	echo "tahoe-lafs" > ${PKGDIR}/tahoe.list.chroot
+	echo "mysql-server" > ${PKGDIR}/mysql.list.chroot
+	echo "python2.7 g++ make checkinstall" > ${PKGDIR}/nodejs.list.chroot
+	echo "openjdk-6-jre" > ${destdir}/CONFig/package-lists/java.list.chroot
+	echo "locales" > ${PKGDIR}/locale.list.chroot
 
 hooks: add_packages
-	mkdir -p ${DESTDIR}/config/hooks
-	cp hooks/* ${DESTDIR}/config/hooks/
+	mkdir -p ${HOOKDIR}
+	cp hooks/* ${HOOKDIR}/
 
 custom: hooks
-	mkdir -p ${DESTDIR}/config/custom
-	cp custom/* ${DESTDIR}/config/custom/
+	mkdir -p ${CUSTDIR}
+	cp custom/* ${CUSTDIR}/
 
 build: custom
 	cd ${DESTDIR} && lb build
