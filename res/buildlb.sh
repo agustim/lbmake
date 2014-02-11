@@ -1,5 +1,5 @@
 #!/bin/sh
-GP=$(pwd)/
+GP=/var/www/
 IMAGE_PATH=images
 WORKSPACE=lbmake
 REPOSITORY=https://github.com/agustim/lbmake
@@ -7,6 +7,8 @@ IMAGE_NAME=gcodis
 IMAGE_EXT=iso
 LBIMAGE_NAME=binary.hybrid.iso
 LBWORKSPACE=devel
+USER=repo
+GROUP=repo
 
 make_dirs(){
 	mkdir -p ${GP}${IMAGE_PATH}/unstable
@@ -28,11 +30,11 @@ gitversion(){
 }
 
 clean_workspace(){
-	cd ${GP}${WORKSPACE} && sudo make clean
+	cd ${GP}${WORKSPACE} && make clean
 }
 
 make_workspace(){
-	cd ${GP}${WORKSPACE} && sudo make all	
+	cd ${GP}${WORKSPACE} && make all	
 }
 
 make_readme(){
@@ -83,3 +85,5 @@ then
 fi
 cp ${BUILDIMG} ${ACTIMG}	
 make_readme ${ACTIMG} > ${ACTREADME}
+
+chown -R ${USER}:${GROUP} ${GP}${IMAGE_PATH}
