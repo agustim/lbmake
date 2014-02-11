@@ -40,7 +40,7 @@ make_config: prepare_configure
 	cd ${DESTDIR} && lb config
 
 add_repos: make_config
-	which curl &>/dev/null
+	which curl >/dev/null
 	mkdir -p ${ARCHDIR}
 	echo "deb http://repo.clommunity-project.eu/debian unstable/" > ${ARCHDIR}/gcodis.list.chroot
 	$(subst KEY_ID,8AE35B96C3FD5CD9, ${GET_KEY}) > ${ARCHDIR}/gcodis.key.chroot
