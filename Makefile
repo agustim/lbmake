@@ -3,6 +3,7 @@ DESTDIR ?= devel
 ARCH ?= i386
 FLAVOUR ?= 686-pae
 IMAGE ?= iso-hybrid
+INSTALL ?= cdrom
 CPATH ?= /var/lib/lxc/
 MACADDR ?= $(shell echo $$(echo $$FQDM|md5sum|sed 's/^\(..\)\(..\)\(..\)\(..\)\(..\).*$$/02:\1:\2:\3:\4:\5/'))
 
@@ -33,8 +34,8 @@ prepare_configure: build_environment
 		--binary-images ${IMAGE} \
 		--architectures ${ARCH} \
 		--linux-flavours ${FLAVOUR} \
+		--debian-installer ${INSTALL} \
 		--bootappend-live "boot=live config keyboard-layouts=es,es" \
-		--debian-installer live \
 		--apt-indices false \
 		"$${@}"' > ${DESTDIR}/auto/config
 
