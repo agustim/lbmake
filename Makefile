@@ -2,8 +2,8 @@
 DESTDIR ?= devel
 ARCH ?= i386
 FLAVOUR ?= 686-pae
-IMAGE ?= iso-hybrid
-INSTALL ?= cdrom
+IMAGE ?= iso-hybrid # or iso, hdd, tar or netboot
+INSTALL ?= cdrom # or businesscard, netinst, live...
 CPATH ?= /var/lib/lxc/
 MACADDR ?= $(shell echo $$(echo $$FQDM|md5sum|sed 's/^\(..\)\(..\)\(..\)\(..\)\(..\).*$$/02:\1:\2:\3:\4:\5/'))
 
@@ -86,7 +86,7 @@ container: build
 	# Copy configuration
 	cat ./lxc/config >> ${CPATH}/gcodis/config
 
-	#Copying chroot to rootfs
+	# Copying chroot to rootfs
 	cp -vr ${DESTDIR}/chroot/ ${CPATH}/gcodis
 	mv ${CPATH}/gcodis/chroot ${CPATH}/gcodis/rootfs
 	rm ${CPATH}/gcodis/rootfs/etc/inittab && cp ./lxc/inittab ${CPATH}/gcodis/rootfs/etc/
@@ -98,4 +98,4 @@ clean:
 	cd ${DESTDIR} && lb clean
 	@rm .build
 
-.PHONY: all describe build_environment prepare_configure make_config add_repos add_packages hooks custom build clean
+.PHONY: all describe build_environment prepare_configure make_config add_repos add_packages hooks custom build container clean
