@@ -3,6 +3,8 @@ DESTDIR ?= devel
 ARCH ?= i386
 FLAVOUR ?= 686-pae
 IMAGE ?= iso-hybrid
+CPATH ?= /var/lib/lxc/
+MACADDR ?= $(shell echo $$(echo $$FQDM|md5sum|sed 's/^\(..\)\(..\)\(..\)\(..\)\(..\).*$$/02:\1:\2:\3:\4:\5/'))
 
 GET_KEY := curl -s 'http://pgp.mit.edu/pks/lookup?op=get&search=0xKEY_ID' | sed -n '/^-----BEGIN/,/^-----END/p'
 ARCHDIR := ${DESTDIR}/config/archives
@@ -70,6 +72,24 @@ custom: hooks res/clommunity.png
 build: custom
 	cd ${DESTDIR} && lb build
 
+container: build
+	mkdir -p ${CPATH}/gcodis
+	grep -q "^lxc.rootfs" ${CPATH}/gcodis/config 2>/dev/null || echo "lxc.rootfs = ${CPATH}/gcodis/rootfs" >> ${CPATH}/gcodis/config
+
+	# Network configuration
+	grep "^## Network" ./lxc/config || printf "## Network\nlxc.network.type         = veth\nlxc.network.flags               =up\nlxc.network.hwaddr         =${MACADDR}\n#.lxc.network.link         = vmbr\nlxc.network.link                = lxcbr0\nlxc.network.name              = eth0" >> ./lxc/config
+
+	# Copy configuration
+	cat ./lxc/config >> ${CPATH}/gcodis/config
+
+	#Copying chroot to rootfs
+	cp -vr ${DESTDIR}/chroot/ ${CPATH}/gcodis
+	mv ${CPATH}/gcodis/chroot ${CPATH}/gcodis/rootfs
+	rm ${CPATH}/gcodis/rootfs/etc/inittab && cp ./lxc/inittab ${CPATH}/gcodis/rootfs/etc/
+	mkdir -p ${CPATH}/gcodis/rootfs/selinux
+	echo 0 > ${CPATH}/gcodis/rootfs/selinux/enforce
+	echo "root:root" | chroot ${CPATH}/gcodis/rootfs/ chpasswd
+	
 clean:
 	cd ${DESTDIR} && lb clean
 
