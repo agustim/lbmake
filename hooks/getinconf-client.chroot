@@ -1,5 +1,6 @@
 #!/bin/sh
 
+# Configure
 cat << EOF | getinconf-client configure
 http://10.139.40.84/index.php
 demo
@@ -7,3 +8,6 @@ demo
 eth0
 n
 EOF
+ 
+# Execute first time.
+sed -i -e 's/^exit 0/getinconf-client install\nexit 0/' /etc/rc.local
