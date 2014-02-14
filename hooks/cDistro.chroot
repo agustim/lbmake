@@ -1,0 +1,10 @@
+#!/bin/sh
+
+curl "https://codeload.github.com/agustim/cDistro/zip/master" > cDistro.zip
+unzip cDistro.zip
+cd cDistro-master
+make install
+cd ..
+rm -rf cDistro-master cDistro.zip
+sed -i -e 's/BINDIP="127.0.0.1"/BINDIP="0.0.0.0"/' /etc/cdistro.conf
+update-rc.d cdistro defaults
