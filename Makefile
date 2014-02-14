@@ -70,8 +70,11 @@ custom: hooks res/clommunity.png
 		"${TIMESTAMP}\n${GIT_BRANCH}@${GIT_HASH}" \
 		${CUSTDIR}/splash.png
 
-build: custom
+build: .build
+
+.build: custom
 	cd ${DESTDIR} && lb build
+	@touch .build
 
 container: build
 	mkdir -p ${CPATH}/gcodis
@@ -93,5 +96,6 @@ container: build
 	
 clean:
 	cd ${DESTDIR} && lb clean
+	@rm .build
 
 .PHONY: all describe build_environment prepare_configure make_config add_repos add_packages hooks custom build clean
