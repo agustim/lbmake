@@ -1,4 +1,8 @@
-#!/bin/sh
+#!/bin/bash -ex
+
+# Being used as a cron job as follows:
+# 0 3 * * * root. /etc/profile; /home/repo/buildlb.sh > /var/www/images/logs/buildlb.log 2>&1
+
 GP=/var/www/
 IMAGE_PATH=images
 WORKSPACE=lbmake
