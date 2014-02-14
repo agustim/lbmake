@@ -96,6 +96,6 @@ container: build
 	
 clean:
 	cd ${DESTDIR} && lb clean
-	@rm .build
+	@rm -f .build
 
 .PHONY: all describe build_environment prepare_configure make_config add_repos add_packages hooks custom build container clean
