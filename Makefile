@@ -5,6 +5,7 @@ FLAVOUR ?= 686-pae
 IMAGE ?= iso-hybrid # or iso, hdd, tar or netboot
 INSTALL ?= cdrom # or businesscard, netinst, live...
 CPATH ?= /var/lib/lxc/
+CNAME ?= gcodis
 MACADDR ?= $(shell echo $$(echo $$FQDM|md5sum|sed 's/^\(..\)\(..\)\(..\)\(..\)\(..\).*$$/02:\1:\2:\3:\4:\5/'))
 
 GET_KEY := curl -s 'http://pgp.mit.edu/pks/lookup?op=get&search=0xKEY_ID' | sed -n '/^-----BEGIN/,/^-----END/p'
@@ -77,22 +78,19 @@ build: .build
 	@touch .build
 
 container: build
-	mkdir -p ${CPATH}/gcodis
-	grep -q "^lxc.rootfs" ${CPATH}/gcodis/config 2>/dev/null || echo "lxc.rootfs = ${CPATH}/gcodis/rootfs" >> ${CPATH}/gcodis/config
-
+	grep -q "^lxc.rootfs" ${CPATH}/${CNAME}/config 2>/dev/null || echo "lxc.rootfs = ${CPATH}/${CNAME}/rootfs" > ./lxc/config && cat ./lxc/basic.conf >> ./lxc/config
 	# Network configuration
-	grep "^## Network" ./lxc/config || printf "## Network\nlxc.network.type         = veth\nlxc.network.flags               =up\nlxc.network.hwaddr         =${MACADDR}\n#.lxc.network.link         = vmbr\nlxc.network.link                = lxcbr0\nlxc.network.name              = eth0" >> ./lxc/config
-
-	# Copy configuration
-	cat ./lxc/config >> ${CPATH}/gcodis/config
-
+	printf "## Network\nlxc.network.type         = veth\nlxc.network.flags               =up\nlxc.network.hwaddr         =${MACADDR}\n#.lxc.network.link         = vmbr\nlxc.network.link                = lxcbr0\nlxc.network.name              = eth0" >> ./lxc/config
+	mkdir -p ${CPATH}/${CNAME}
+	#Copying configuration
+	mv --force ./lxc/config ${CPATH}/${CNAME}/
 	# Copying chroot to rootfs
-	cp -vr ${DESTDIR}/chroot/ ${CPATH}/gcodis
-	mv ${CPATH}/gcodis/chroot ${CPATH}/gcodis/rootfs
-	rm ${CPATH}/gcodis/rootfs/etc/inittab && cp ./lxc/inittab ${CPATH}/gcodis/rootfs/etc/
-	mkdir -p ${CPATH}/gcodis/rootfs/selinux
-	echo 0 > ${CPATH}/gcodis/rootfs/selinux/enforce
-	echo "root:root" | chroot ${CPATH}/gcodis/rootfs/ chpasswd
+	ls | grep "rootfs" || cp -vr ${DESTDIR}/chroot/ ${CPATH}/${CNAME}/rootfs
+	#mv -f ${CPATH}/${CNAME}/chroot ${CPATH}/${CNAME}/rootfs
+	rm ${CPATH}/${CNAME}/rootfs/etc/inittab && cp ./lxc/inittab ${CPATH}/${CNAME}/rootfs/etc/
+	mkdir -p ${CPATH}/${CNAME}/rootfs/selinux
+	echo 0 > ${CPATH}/${CNAME}/rootfs/selinux/enforce
+	echo "root:root" | chroot ${CPATH}/${CNAME}/rootfs/ chpasswd
 	
 clean:
 	cd ${DESTDIR} && lb clean
