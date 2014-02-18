@@ -79,8 +79,8 @@ make_workspace
 
 if [ -f ${ACTIMG} ]
 then
-	md5_compare ${ACTIMG} ${BUILDIMG}
-	if [ $? -eq 1 ]
+	
+	if ! md5_compare ${ACTIMG} ${BUILDIMG}
 	then
 		TIMEFILE=$(stat -c %z ${ACTIMG}|sed 's|[- :]||g'|cut -d "." -f 1)
 		mv ${ACTIMG} ${OLDIMG}
