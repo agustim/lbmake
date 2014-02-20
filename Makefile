@@ -77,21 +77,40 @@ build: .build
 	cd ${DESTDIR} && lb build
 	@touch .build
 
-container: build
+container: ${DESTDIR}/binary-tar.tar
+	# Copying gcodis to container directory
+	mkdir -p /tmp/gcodis/
+	mv ${DESTDIR}/binary-tar.tar /tmp/gcodis/
+	tar -xvf /tmp/gcodis/binary-tar.tar -C /tmp/gcodis/
+	mkdir -p /mnt/tmp/
+	mkdir -p ${CPATH}/${CNAME}/
+	mount /tmp/gcodis/binary/live/filesystem.squashfs /mnt/tmp/
+	ls ${CPATH}/${CNAME}/ | grep "rootfs" || cp -rf /mnt/tmp/ /${CPATH}/${CNAME}/rootfs
+
+	# Patch for local resolv.conf
+	/bin/cat /etc/resolv.conf >> ${CPATH}/${CNAME}/rootfs/etc/resolv.conf
+
+	# Begin with LXC configuration
 	grep -q "^lxc.rootfs" ${CPATH}/${CNAME}/config 2>/dev/null || echo "lxc.rootfs = ${CPATH}/${CNAME}/rootfs" > ./lxc/config && cat ./lxc/basic.conf >> ./lxc/config
+
 	# Network configuration
 	printf "## Network\nlxc.network.type         = veth\nlxc.network.flags               =up\nlxc.network.hwaddr         =${MACADDR}\n#.lxc.network.link         = vmbr\nlxc.network.link                = lxcbr0\nlxc.network.name              = eth0" >> ./lxc/config
-	mkdir -p ${CPATH}/${CNAME}
 	#Copying configuration
 	mv --force ./lxc/config ${CPATH}/${CNAME}/
+
 	# Copying chroot to rootfs
-	ls | grep "rootfs" || cp -vr ${DESTDIR}/chroot/ ${CPATH}/${CNAME}/rootfs
-	#mv -f ${CPATH}/${CNAME}/chroot ${CPATH}/${CNAME}/rootfs
+	#ls | grep "rootfs" || cp -vr ${DESTDIR}/chroot/ ${CPATH}/${CNAME}/rootfs
 	rm ${CPATH}/${CNAME}/rootfs/etc/inittab && cp ./lxc/inittab ${CPATH}/${CNAME}/rootfs/etc/
 	mkdir -p ${CPATH}/${CNAME}/rootfs/selinux
 	echo 0 > ${CPATH}/${CNAME}/rootfs/selinux/enforce
 	echo "root:root" | chroot ${CPATH}/${CNAME}/rootfs/ chpasswd
-	
+
+	# Removing redundant files and unmounting partitions
+	umount /mnt/tmp/
+	rm -r /mnt/tmp
+	mv /tmp/gcodis/binary-tar.tar ${DESTDIR}
+	rm -r /tmp/gcodis
+
 clean:
 	cd ${DESTDIR} && lb clean
 	@rm -f .build
