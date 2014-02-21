@@ -69,24 +69,22 @@ md5_compare(){
 ACTIMG=${GP}${IMAGE_PATH}/unstable/${IMAGE_NAME}.${IMAGE_EXT}
 ACTREADME=${GP}${IMAGE_PATH}/unstable/${IMAGE_NAME}.README
 BUILDIMG=${GP}${WORKSPACE}/${LBWORKSPACE}/${LBIMAGE_NAME}
-OLDIMG=${GP}${IMAGE_PATH}/unstable/old/${IMAGE_NAME}.${TIMEFILE}.${IMAGE_EXT}
-OLDREADME=${GP}${IMAGE_PATH}/unstable/old/${IMAGE_NAME}.${TIMEFILE}.README
 
 make_dirs
 [ -d "${GP}${WORKSPACE}" ] && clean_workspace
 gitpull
 make_workspace
 
-if [ -f ${ACTIMG} ]
+if [[ -f ${ACTIMG} ]] && ! md5_compare ${ACTIMG} ${BUILDIMG}
 then
+	TIMEFILE=$(/usr/bin/stat -c %z ${ACTIMG}|sed 's|[- :]||g'|cut -d "." -f 1)
+	OLDIMG=${GP}${IMAGE_PATH}/unstable/old/${IMAGE_NAME}.${TIMEFILE}.${IMAGE_EXT}
+	OLDREADME=${GP}${IMAGE_PATH}/unstable/old/${IMAGE_NAME}.${TIMEFILE}.README
 	
-	if ! md5_compare ${ACTIMG} ${BUILDIMG}
-	then
-		TIMEFILE=$(/usr/bin/stat -c %z ${ACTIMG}|sed 's|[- :]||g'|cut -d "." -f 1)
-		mv ${ACTIMG} ${OLDIMG}
-		mv ${ACTREADME} ${OLDREADME}
-	fi
+	mv ${ACTIMG} ${OLDIMG}
+	mv ${ACTREADME} ${OLDREADME}
 fi
+
 cp ${BUILDIMG} ${ACTIMG}	
 make_readme ${ACTIMG} > ${ACTREADME}
 
