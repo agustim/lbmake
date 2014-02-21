@@ -13,10 +13,11 @@ LBIMAGE_NAME=binary.hybrid.iso
 LBWORKSPACE=devel
 USER=repo
 GROUP=repo
+SUBDIR=unstable
 
 make_dirs(){
-	mkdir -p ${GP}${IMAGE_PATH}/unstable
-	mkdir -p ${GP}${IMAGE_PATH}/unstable/old
+	mkdir -p ${GP}${IMAGE_PATH}/${SUBDIR}
+	mkdir -p ${GP}${IMAGE_PATH}/${SUBDIR}/old
 }
 
 gitpull(){
@@ -66,8 +67,8 @@ md5_compare(){
 }
 
 # Make image
-ACTIMG=${GP}${IMAGE_PATH}/unstable/${IMAGE_NAME}.${IMAGE_EXT}
-ACTREADME=${GP}${IMAGE_PATH}/unstable/${IMAGE_NAME}.README
+ACTIMG=${GP}${IMAGE_PATH}/${SUBDIR}/${IMAGE_NAME}.${IMAGE_EXT}
+ACTREADME=${GP}${IMAGE_PATH}/${SUBDIR}/${IMAGE_NAME}.README
 BUILDIMG=${GP}${WORKSPACE}/${LBWORKSPACE}/${LBIMAGE_NAME}
 
 make_dirs
@@ -79,8 +80,8 @@ if [[ -f ${ACTIMG} ]] && ! md5_compare ${ACTIMG} ${BUILDIMG}
 then
 	TIMEFILE=$(/usr/bin/stat -c %z ${ACTIMG}|sed 's|[- :]||g'|cut -d "." -f 1)
 	TIMEFILE=${TIMEFILE:0:8}
-	OLDIMG=${GP}${IMAGE_PATH}/unstable/old/${IMAGE_NAME}.${TIMEFILE}.${IMAGE_EXT}
-	OLDREADME=${GP}${IMAGE_PATH}/unstable/old/${IMAGE_NAME}.${TIMEFILE}.README
+	OLDIMG=${GP}${IMAGE_PATH}/${SUBDIR}/old/${IMAGE_NAME}.${TIMEFILE}.${IMAGE_EXT}
+	OLDREADME=${GP}${IMAGE_PATH}/${SUBDIR}/old/${IMAGE_NAME}.${TIMEFILE}.README
 	
 	mv ${ACTIMG} ${OLDIMG}
 	mv ${ACTREADME} ${OLDREADME}
