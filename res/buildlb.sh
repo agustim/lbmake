@@ -45,11 +45,12 @@ make_workspace(){
 make_readme(){
 	echo "Automatic image generation"
 	echo "--------------------------"
-	echo "${IMAGE_NAME}.${IMAGE_EXT} (${MD5NF})\n"
+	echo "${IMAGE_NAME}.${IMAGE_EXT} (${MD5NF})"
+	echo
 	echo "Packages:"
 	cd ${GP}${WORKSPACE} && make describe
-	echo "\nBuilder: ${REPOSITORY} (hash:$(gitversion))"
-
+	echo "Builder: ${REPOSITORY} (hash:$(gitversion))"
+	echo
 }
 
 md5_compare(){
