@@ -82,7 +82,7 @@ then
 	
 	if ! md5_compare ${ACTIMG} ${BUILDIMG}
 	then
-		TIMEFILE=$(stat -c %z ${ACTIMG}|sed 's|[- :]||g'|cut -d "." -f 1)
+		TIMEFILE=$(/usr/bin/stat -c %z ${ACTIMG}|sed 's|[- :]||g'|cut -d "." -f 1)
 		mv ${ACTIMG} ${OLDIMG}
 		mv ${ACTREADME} ${OLDREADME}
 	fi
