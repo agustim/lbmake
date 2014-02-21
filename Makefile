@@ -77,14 +77,16 @@ build: .build
 	cd ${DESTDIR} && lb build
 	@touch .build
 
-container: ${DESTDIR}/binary-tar.tar
+container:
 	# Copying gcodis to container directory
-	mkdir -p /tmp/gcodis/
-	mv ${DESTDIR}/binary-tar.tar /tmp/gcodis/
-	tar -xvf /tmp/gcodis/binary-tar.tar -C /tmp/gcodis/
+	# mkdir -p /tmp/gcodis/
+	# mv ${DESTDIR}/binary-tar.tar /tmp/gcodis/
+	# tar -xvf /tmp/gcodis/binary-tar.tar -C /tmp/gcodis/
+	mkdir ${DESTDIR}/tmp/
 	mkdir -p /mnt/tmp/
 	mkdir -p ${CPATH}/${CNAME}/
-	mount /tmp/gcodis/binary/live/filesystem.squashfs /mnt/tmp/
+	mount -o loop ${DESTDIR}/binary.hybrid.iso ${DESTDIR}/tmp/
+	mount ${DESTDIR}/tmp/live/filesystem.squashfs /mnt/tmp/
 	ls ${CPATH}/${CNAME}/ | grep "rootfs" || cp -rf /mnt/tmp/ /${CPATH}/${CNAME}/rootfs
 
 	# Patch for local resolv.conf
@@ -105,11 +107,14 @@ container: ${DESTDIR}/binary-tar.tar
 	echo 0 > ${CPATH}/${CNAME}/rootfs/selinux/enforce
 	echo "root:root" | chroot ${CPATH}/${CNAME}/rootfs/ chpasswd
 
+	sleep 2
 	# Removing redundant files and unmounting partitions
 	umount /mnt/tmp/
 	rm -r /mnt/tmp
-	mv /tmp/gcodis/binary-tar.tar ${DESTDIR}
-	rm -r /tmp/gcodis
+	umount ${DESTDIR}/tmp/
+	rm -r ${DESTDIR}/tmp
+	# mv /tmp/gcodis/binary-tar.tar ${DESTDIR}
+	# rm -r /tmp/gcodis
 
 clean:
 	cd ${DESTDIR} && lb clean
