@@ -77,11 +77,7 @@ build: .build
 	cd ${DESTDIR} && lb build
 	@touch .build
 
-container:
-	# Copying gcodis to container directory
-	# mkdir -p /tmp/gcodis/
-	# mv ${DESTDIR}/binary-tar.tar /tmp/gcodis/
-	# tar -xvf /tmp/gcodis/binary-tar.tar -C /tmp/gcodis/
+container: build
 	mkdir ${DESTDIR}/tmp/
 	mkdir -p /mnt/tmp/
 	mkdir -p ${CPATH}/${CNAME}/
@@ -101,7 +97,6 @@ container:
 	mv --force ./lxc/config ${CPATH}/${CNAME}/
 
 	# Copying chroot to rootfs
-	#ls | grep "rootfs" || cp -vr ${DESTDIR}/chroot/ ${CPATH}/${CNAME}/rootfs
 	rm ${CPATH}/${CNAME}/rootfs/etc/inittab && cp ./lxc/inittab ${CPATH}/${CNAME}/rootfs/etc/
 	mkdir -p ${CPATH}/${CNAME}/rootfs/selinux
 	echo 0 > ${CPATH}/${CNAME}/rootfs/selinux/enforce
@@ -113,8 +108,6 @@ container:
 	rm -r /mnt/tmp
 	umount ${DESTDIR}/tmp/
 	rm -r ${DESTDIR}/tmp
-	# mv /tmp/gcodis/binary-tar.tar ${DESTDIR}
-	# rm -r /tmp/gcodis
 
 clean:
 	cd ${DESTDIR} && lb clean
