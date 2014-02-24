@@ -24,7 +24,7 @@ disk image and use it as well:
 	
 ## Container
 
-If you preffer to create a container instead of using a live cd image or a complete installation, you can add a container to your sistem by doing the following:
+If you prefer to create a container instead of using a live cd image or a complete installation, you can add a container to your sistem by doing the following:
 
 	sudo make container
 	
