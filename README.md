@@ -20,3 +20,12 @@ disk image and use it as well:
 
 	qemu-img create -f qcow2 disk.qcow2 4G
 	qemu-system-i386 -enable-kvm -cdrom devel/binary.hybrid.iso -hda disk.qcow2
+	
+	
+## Container
+
+If you preffer to create a container instead of using a live cd image or a complete installation, you can add a container to your sistem by doing the following:
+
+	sudo make container
+	
+To create the container, the iso-hybrid must be created previously. Typing the previous command implies the creation of the iso-hybrid if it is not created yet.
