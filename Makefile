@@ -7,6 +7,7 @@ INSTALL ?= live # or businesscard, netinst, cdrom...
 CPATH ?= /var/lib/lxc/
 CNAME ?= gcodis
 MACADDR ?= $(shell echo $$(echo $$FQDM|md5sum|sed 's/^\(..\)\(..\)\(..\)\(..\)\(..\).*$$/02:\1:\2:\3:\4:\5/'))
+ROOTPWD ?= root
 
 GET_KEY := curl -s 'http://pgp.mit.edu/pks/lookup?op=get&search=0xKEY_ID' | sed -n '/^-----BEGIN/,/^-----END/p'
 ARCHDIR := ${DESTDIR}/config/archives
@@ -100,7 +101,18 @@ container: build
 	rm ${CPATH}/${CNAME}/rootfs/etc/inittab && cp ./lxc/inittab ${CPATH}/${CNAME}/rootfs/etc/
 	mkdir -p ${CPATH}/${CNAME}/rootfs/selinux
 	echo 0 > ${CPATH}/${CNAME}/rootfs/selinux/enforce
-	echo "root:root" | chroot ${CPATH}/${CNAME}/rootfs/ chpasswd
+	echo "root:${ROOTPWD}" | chroot ${CPATH}/${CNAME}/rootfs/ chpasswd
+	mkdir -p ${CPATH}/${CNAME}/rootfs/dev/net
+	chroot ${CPATH}/${CNAME}/rootfs/ mknod tun c 10 200
+
+	# Config interfaces
+	printf "\n auto eth0\niface eth0 inet dhcp\n" >> ${CPATH}/${CNAME}/rootfs/etc/network/interfaces
+
+	#Configuring locales in chroot
+	chroot ${CPATH}/${CNAME}/rootfs/ sed -i "s/^# en_US/en_US/" /etc/locale.gen
+	chroot ${CPATH}/${CNAME}/rootfs/ grep -v "^#" /etc/locale.gen
+	chroot ${CPATH}/${CNAME}/rootfs/ /usr/sbin/locale-gen
+	chroot ${CPATH}/${CNAME}/rootfs/ update-locale LANG=en_US.UTF-8
 
 	sleep 2
 	# Removing redundant files and unmounting partitions
