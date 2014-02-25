@@ -78,7 +78,7 @@ build: .build
 	cd ${DESTDIR} && lb build
 	@touch .build
 
-container: build
+container:
 	mkdir ${DESTDIR}/tmp/
 	mkdir -p /mnt/tmp/
 	mkdir -p ${CPATH}/${CNAME}/
@@ -103,7 +103,7 @@ container: build
 	echo 0 > ${CPATH}/${CNAME}/rootfs/selinux/enforce
 	echo "root:${ROOTPWD}" | chroot ${CPATH}/${CNAME}/rootfs/ chpasswd
 	mkdir -p ${CPATH}/${CNAME}/rootfs/dev/net
-	chroot ${CPATH}/${CNAME}/rootfs/ mknod tun c 10 200
+	chroot ${CPATH}/${CNAME}/rootfs/ /bin/mknod /dev/net/tun c 10 200
 
 	# Config interfaces
 	printf "\n auto eth0\niface eth0 inet dhcp\n" >> ${CPATH}/${CNAME}/rootfs/etc/network/interfaces
