@@ -114,6 +114,13 @@ container:
 	chroot ${CPATH}/${CNAME}/rootfs/ /usr/sbin/locale-gen
 	chroot ${CPATH}/${CNAME}/rootfs/ update-locale LANG=en_US.UTF-8
 
+	#Enabling Avahi
+	sed -i "s%^rlimit-nproc%#&%" ${CPATH}/${CNAME}/rootfs/etc/avahi/avahi-daemon.conf
+	chmod 1777 ${CPATH}/${CNAME}/rootfs/tmp
+
+	#Solving mySQL issues
+	chroot ${CPATH}/${CNAME}/rootfs/ sh -c "chown -R mysql /var/lib/mysql"
+
 	sleep 2
 	# Removing redundant files and unmounting partitions
 	umount /mnt/tmp/
