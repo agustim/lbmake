@@ -6,8 +6,10 @@ IMAGE ?= iso-hybrid # or iso, hdd, tar or netboot
 INSTALL ?= live # or businesscard, netinst, cdrom...
 CPATH ?= /var/lib/lxc/
 CNAME ?= gcodis
-MACADDR ?= $(shell echo $$(echo $$FQDM|md5sum|sed 's/^\(..\)\(..\)\(..\)\(..\)\(..\).*$$/02:\1:\2:\3:\4:\5/'))
+MACGEN ?= $(shell echo $$(date +%N))
+MACADDR ?= $(shell echo $$(echo ${MACGEN}|md5sum|sed 's/^\(..\)\(..\)\(..\)\(..\)\(..\).*$$/02:\1:\2:\3:\4:\5/'))
 ROOTPWD ?= root
+MACHINENAME ?= gcodis
 
 GET_KEY := curl -s 'http://pgp.mit.edu/pks/lookup?op=get&search=0xKEY_ID' | sed -n '/^-----BEGIN/,/^-----END/p'
 ARCHDIR := ${DESTDIR}/config/archives
@@ -102,6 +104,7 @@ container:
 	mkdir -p ${CPATH}/${CNAME}/rootfs/selinux
 	echo 0 > ${CPATH}/${CNAME}/rootfs/selinux/enforce
 	echo "root:${ROOTPWD}" | chroot ${CPATH}/${CNAME}/rootfs/ chpasswd
+	echo "${MACHINENAME}" > ${CPATH}/${CNAME}/rootfs/etc/hostname
 	mkdir -p ${CPATH}/${CNAME}/rootfs/dev/net
 	chroot ${CPATH}/${CNAME}/rootfs/ /bin/mknod /dev/net/tun c 10 200
 
