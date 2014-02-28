@@ -31,7 +31,7 @@ describe: packages
 
 build_environment:
 	mkdir -p ${DESTDIR}/auto
-	cp /usr/share/doc/live-build/examples/auto/* ${DESTDIR}/auto/
+	cp res/auto/* ${DESTDIR}/auto/
 
 prepare_configure: build_environment
 	echo 'lb config noauto \
