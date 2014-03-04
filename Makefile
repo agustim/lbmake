@@ -124,6 +124,10 @@ container:
 	#Solving mySQL issues
 	chroot ${CPATH}/${CNAME}/rootfs/ sh -c "chown -R mysql /var/lib/mysql"
 
+	#Creating ssh rsa and dsa keys
+	printf "\n\n" | chroot /var/lib/lxc/gcodis/rootfs ssh-keygen -t rsa1 -f /etc/ssh/ssh_host_rsa_key
+	printf "\n\n" | chroot /var/lib/lxc/gcodis/rootfs ssh-keygen -t dsa  -f /etc/ssh/ssh_host_dsa_key
+
 	sleep 2
 	# Removing redundant files and unmounting partitions
 	umount /mnt/tmp/
