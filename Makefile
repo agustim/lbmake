@@ -5,12 +5,13 @@ FLAVOUR ?= 686-pae
 IMAGE ?= iso-hybrid # or iso, hdd, tar or netboot
 INSTALL ?= live # or businesscard, netinst, cdrom...
 AREAS ?= "main contrib" # non-free
-CPATH ?= /var/lib/lxc/
+CPATH ?= /var/lib/lxc
 CNAME ?= gcodis
 MACGEN ?= $(shell echo $$(date +%N))
 MACADDR ?= $(shell echo $$(echo ${MACGEN}|md5sum|sed 's/^\(..\)\(..\)\(..\)\(..\)\(..\).*$$/02:\1:\2:\3:\4:\5/'))
 ROOTPWD ?= root
 MACHINENAME ?= gcodis
+CEXTENSION ?= container.tar.gz
 
 GET_KEY := curl -s 'http://pgp.mit.edu/pks/lookup?op=get&search=0xKEY_ID' | sed -n '/^-----BEGIN/,/^-----END/p'
 ARCHDIR := ${DESTDIR}/config/archives
@@ -24,6 +25,7 @@ SPLASH_SUBTITLE := ${ARCH} ${FLAVOUR}
 TIMESTAMP := $(shell date -u '+%d %b %Y %R %Z')
 GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 GIT_HASH := $(shell git rev-parse --short=12 HEAD)
+MAKEFILEPWD := $(shell pwd)
 
 all: build
 
@@ -86,24 +88,39 @@ build: .build
 	cd ${DESTDIR} && lb build
 	@touch .build
 
-container:
-	mkdir ${DESTDIR}/tmp/
-	mkdir -p /mnt/tmp/
+container_prepare: 
+	mkdir -p ${DESTDIR}/tmp/
+	mkdir -p ${DESTDIR}/mntsquash
 	mkdir -p ${CPATH}/${CNAME}/
+
+container_mount: container_prepare
 	mount -o loop ${DESTDIR}/binary.hybrid.iso ${DESTDIR}/tmp/
-	mount ${DESTDIR}/tmp/live/filesystem.squashfs /mnt/tmp/
-	ls ${CPATH}/${CNAME}/ | grep "rootfs" || cp -rf /mnt/tmp/ /${CPATH}/${CNAME}/rootfs
+	mount ${DESTDIR}/tmp/live/filesystem.squashfs ${DESTDIR}/mntsquash
 
-	# Patch for local resolv.conf
-	/bin/cat /etc/resolv.conf >> ${CPATH}/${CNAME}/rootfs/etc/resolv.conf
-
+container_configfile: 
 	# Begin with LXC configuration
-	grep -q "^lxc.rootfs" ${CPATH}/${CNAME}/config 2>/dev/null || echo "lxc.rootfs = ${CPATH}/${CNAME}/rootfs" > ./lxc/config && cat ./lxc/basic.conf >> ./lxc/config
+	grep -q "^lxc.rootfs" ${CPATH}/${CNAME}/config 2>/dev/null || echo "lxc.rootfs = ${CPATH}/${CNAME}/rootfs" > lxc/config && cat lxc/basic.conf >> lxc/config
 
 	# Network configuration
-	printf "## Network\nlxc.network.type         = veth\nlxc.network.flags               =up\nlxc.network.hwaddr         =${MACADDR}\n#.lxc.network.link         = vmbr\nlxc.network.link                = lxcbr0\nlxc.network.name              = eth0" >> ./lxc/config
+	printf "## Network\nlxc.network.type         = veth\nlxc.network.flags               =up\nlxc.network.hwaddr         =${MACADDR}\n#.lxc.network.link         = vmbr\nlxc.network.link                = lxcbr0\nlxc.network.name              = eth0" >> lxc/config
 	#Copying configuration
-	mv --force ./lxc/config ${CPATH}/${CNAME}/
+	mv --force lxc/config ${CPATH}/${CNAME}/
+
+container_umount: container_configure 
+	# Removing redundant files and unmounting partitions
+	umount ${DESTDIR}/mntsquash
+	umount ${DESTDIR}/tmp/
+
+container_finish: container_umount
+	rm -r ${DESTDIR}/mntsquash
+	rm -r ${DESTDIR}/tmp
+
+container_savefiles: container_mount
+	ls ${CPATH}/${CNAME}/ | grep "rootfs" || cp -rf ${DESTDIR}/mntsquash ${CPATH}/${CNAME}/rootfs
+
+container_configure: container_savefiles
+	# Patch for local resolv.conf
+	/bin/cat /etc/resolv.conf >> ${CPATH}/${CNAME}/rootfs/etc/resolv.conf
 
 	# Copying chroot to rootfs
 	rm ${CPATH}/${CNAME}/rootfs/etc/inittab && cp ./lxc/inittab ${CPATH}/${CNAME}/rootfs/etc/
@@ -135,14 +152,16 @@ container:
 	sed -i 's%^getinconf%[ ! -f /etc/ssh/ssh_host_dsa_key ] \&\& echo -e "\\n\\n" | ssh-keygen -t dsa -f /etc/ssh/ssh_host_dsa_key\ngetinconf%' ${CPATH}/${CNAME}/rootfs/etc/rc.local 
 
 	sync
-	# Removing redundant files and unmounting partitions
-	umount /mnt/tmp/
-	rm -r /mnt/tmp
-	umount ${DESTDIR}/tmp/
-	rm -r ${DESTDIR}/tmp
+
+container: container_finish container_configfile
+
+container_tar: container_finish
+	cd ${CPATH}/${CNAME}/rootfs/ && tar acf ${MAKEFILEPWD}/${DESTDIR}/${CNAME}.${CEXTENSION} *
+	rm -rf ${CPATH}/${CNAME}
 
 clean:
 	cd ${DESTDIR} && lb clean
+	@rm -f ${DESTDIR}/*.${CEXTENSION}
 	@rm -f .build
 
-.PHONY: all describe build_environment prepare_configure make_config add_repos add_packages hooks custom build container clean
+.PHONY: all describe build_environment prepare_configure make_config add_repos add_packages hooks custom build container clean container_prepare container_mount container_configfile container_umount container_finish container_savefiles container_configure
