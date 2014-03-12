@@ -4,6 +4,7 @@ ARCH ?= i386
 FLAVOUR ?= 686-pae
 IMAGE ?= iso-hybrid # or iso, hdd, tar or netboot
 INSTALL ?= live # or businesscard, netinst, cdrom...
+AREAS ?= "main contrib" # non-free
 CPATH ?= /var/lib/lxc/
 CNAME ?= gcodis
 MACGEN ?= $(shell echo $$(date +%N))
@@ -39,6 +40,7 @@ prepare_configure: build_environment
 		--architectures ${ARCH} \
 		--linux-flavours ${FLAVOUR} \
 		--debian-installer ${INSTALL} \
+		--archive-areas ${AREAS} \
 		--bootappend-live "boot=live config keyboard-layouts=es,es" \
 		--apt-indices false \
 		"$${@}"' > ${DESTDIR}/auto/config
