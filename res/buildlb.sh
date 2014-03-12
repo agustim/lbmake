@@ -40,6 +40,7 @@ clean_workspace(){
 
 make_workspace(){
 	cd ${GP}${WORKSPACE} && make all	
+#	cd ${GP}${WORKSPACE} && make container_tar
 }
 
 make_readme(){
@@ -92,3 +93,11 @@ cp ${BUILDIMG} ${ACTIMG}
 make_readme ${ACTIMG} > ${ACTREADME}
 
 chown -R ${USER}:${GROUP} ${GP}${IMAGE_PATH}
+
+# Purge files
+OLDPATH=${GP}${IMAGE_PATH}/${SUBDIR}/old/
+
+for i in $( ls ${OLDPATH}*.iso ${OLDPATH}*.README| grep -v "$(ls -St ${OLDPATH}*.iso|head -n 7|sed -e 's/\.iso//')"); 
+do 
+	rm -f $i 
+done
