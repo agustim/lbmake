@@ -7,3 +7,4 @@ nodejs:	python2.7 g++ make checkinstall
 java:	openjdk-6-jre
 locale:	locales
 cDis:	php5 libssh2-php
+webdav:	libapache2-mod-encoding
