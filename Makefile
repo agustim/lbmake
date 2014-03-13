@@ -150,6 +150,9 @@ container_configure: container_savefiles
 	#Change /dev/null permisions
 	chroot ${CPATH}/${CNAME}/rootfs/ sh -c "chmod 666 /dev/null"	
 
+	#Make a apt-get update
+	chroot ${CPATH}/${CNAME}/rootfs/ sh -c "apt-get update"		
+
 	# First boot will create ssh keys
 	sed -i 's%^getinconf%[ ! -f /etc/ssh/ssh_host_rsa_key ] \&\& echo -e "\\n\\n" | ssh-keygen -t rsa1 -f /etc/ssh/ssh_host_rsa_key\ngetinconf%' ${CPATH}/${CNAME}/rootfs/etc/rc.local
 	sed -i 's%^getinconf%[ ! -f /etc/ssh/ssh_host_dsa_key ] \&\& echo -e "\\n\\n" | ssh-keygen -t dsa -f /etc/ssh/ssh_host_dsa_key\ngetinconf%' ${CPATH}/${CNAME}/rootfs/etc/rc.local 
