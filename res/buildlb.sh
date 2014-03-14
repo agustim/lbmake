@@ -14,6 +14,7 @@ LBWORKSPACE=devel
 USER=repo
 GROUP=repo
 SUBDIR=unstable
+BACKUPDAYS=7
 
 make_dirs(){
 	mkdir -p ${GP}${IMAGE_PATH}/${SUBDIR}
@@ -97,7 +98,7 @@ chown -R ${USER}:${GROUP} ${GP}${IMAGE_PATH}
 # Purge files
 OLDPATH=${GP}${IMAGE_PATH}/${SUBDIR}/old/
 
-for i in $( ls ${OLDPATH}*.iso ${OLDPATH}*.README| grep -v "$(ls -St ${OLDPATH}*.iso|head -n 7|sed -e 's/\.iso//')"); 
+for i in $( ls ${OLDPATH}*.iso ${OLDPATH}*.README| grep -v "$(ls -St ${OLDPATH}*.iso|head -n ${BACKUPDAYS}|sed -e 's/\.iso//')"); 
 do 
 	rm -f $i 
 done
