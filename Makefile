@@ -167,6 +167,8 @@ container_tar: container_finish
 
 clean:
 	cd ${DESTDIR} && lb clean
+	# Remove packages...
+	@rm -f ${DESTDIR}/config/package-lists/*
 	@rm -f ${DESTDIR}/*.${CEXTENSION}
 	@rm -f .build
 
