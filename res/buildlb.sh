@@ -41,7 +41,7 @@ clean_workspace(){
 
 make_workspace(){
 	cd ${GP}${WORKSPACE} && make all	
-#	cd ${GP}${WORKSPACE} && make container_tar
+	cd ${GP}${WORKSPACE} && make container_tar
 }
 
 make_readme(){
@@ -72,7 +72,10 @@ md5_compare(){
 # Make image
 ACTIMG=${GP}${IMAGE_PATH}/${SUBDIR}/${IMAGE_NAME}.${IMAGE_EXT}
 ACTREADME=${GP}${IMAGE_PATH}/${SUBDIR}/${IMAGE_NAME}.README
+ACTCONTAINER=${GP}${IMAGE_PATH}/${SUBDIR}/${IMAGE_NAME}.container.tar.gz
 BUILDIMG=${GP}${WORKSPACE}/${LBWORKSPACE}/${LBIMAGE_NAME}
+BUILDCONTAINER=${GP}${WORKSPACE}/${LBWORKSPACE}/${IMAGE_NAME}.container.tar.gz
+
 
 make_dirs
 [ -d "${GP}${WORKSPACE}" ] && clean_workspace
@@ -85,12 +88,14 @@ then
 	TIMEFILE=${TIMEFILE:0:8}
 	OLDIMG=${GP}${IMAGE_PATH}/${SUBDIR}/old/${IMAGE_NAME}.${TIMEFILE}.${IMAGE_EXT}
 	OLDREADME=${GP}${IMAGE_PATH}/${SUBDIR}/old/${IMAGE_NAME}.${TIMEFILE}.README
+	OLDCONTAINER=${GP}${IMAGE_PATH}/${SUBDIR}/old/${IMAGE_NAME}.${TIMEFILE}.container.tar.gz
 	
 	mv ${ACTIMG} ${OLDIMG}
 	mv ${ACTREADME} ${OLDREADME}
 fi
 
 cp ${BUILDIMG} ${ACTIMG}	
+cp ${BUILDCONTAINER} ${ACTCONTAINER}
 make_readme ${ACTIMG} > ${ACTREADME}
 
 chown -R ${USER}:${GROUP} ${GP}${IMAGE_PATH}
