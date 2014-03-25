@@ -11,8 +11,8 @@ IMAGE_NAME=cloudy
 IMAGE_EXT=iso
 LBIMAGE_NAME=binary.hybrid.iso
 LBWORKSPACE=devel
-USER=repo
-GROUP=repo
+USER=www-data
+GROUP=www-data
 SUBDIR=unstable
 BACKUPDAYS=7
 
@@ -92,6 +92,7 @@ then
 	
 	mv ${ACTIMG} ${OLDIMG}
 	mv ${ACTREADME} ${OLDREADME}
+	mv ${ACTCONTAINER} ${OLDCONTAINER}
 fi
 
 cp ${BUILDIMG} ${ACTIMG}	
@@ -103,7 +104,7 @@ chown -R ${USER}:${GROUP} ${GP}${IMAGE_PATH}
 # Purge files
 OLDPATH=${GP}${IMAGE_PATH}/${SUBDIR}/old/
 
-for i in $( ls ${OLDPATH}*.iso ${OLDPATH}*.README| grep -v "$(ls -St ${OLDPATH}*.iso|head -n ${BACKUPDAYS}|sed -e 's/\.iso//')"); 
+for i in $( ls ${OLDPATH}*.iso ${OLDPATH}*.README ${OLDPATH}*.container.tar.gz| grep -v "$(ls -St ${OLDPATH}*.iso|head -n ${BACKUPDAYS}|sed -e 's/\.iso//')"); 
 do 
 	rm -f $i 
 done
