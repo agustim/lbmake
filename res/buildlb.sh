@@ -7,7 +7,7 @@ GP=/var/www/
 IMAGE_PATH=images
 WORKSPACE=lbmake
 REPOSITORY=https://github.com/agustim/lbmake
-IMAGE_NAME=gcodis
+IMAGE_NAME=cloudy
 IMAGE_EXT=iso
 LBIMAGE_NAME=binary.hybrid.iso
 LBWORKSPACE=devel
@@ -41,7 +41,7 @@ clean_workspace(){
 
 make_workspace(){
 	cd ${GP}${WORKSPACE} && make all	
-	cd ${GP}${WORKSPACE} && make container_tar
+	cd ${GP}${WORKSPACE} && CNAME=${IMAGE_NAME} make container_tar
 }
 
 make_readme(){
